@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-public class scheduleAppServer {//ڵ
+public class scheduleAppServer {// ڵ
 	private static scheduleAppServer instance = new scheduleAppServer();
 
 	public static scheduleAppServer getInstance() {
@@ -16,7 +16,7 @@ public class scheduleAppServer {//ڵ
 	}
 
 	public scheduleAppServer() {
-		
+
 	}
 
 	String jdbc_url = "jdbc:mysql://localhost:3306/we_meet?characterEncoding=euckr&useUnicode=true&mysqlEncoding=euckr&useSSL=false&serverTimezone=Asia/Seoul";
@@ -25,11 +25,16 @@ public class scheduleAppServer {//ڵ
 	Connection conn = null;
 	PreparedStatement pstmt = null;
 	PreparedStatement pstmt2 = null;
+	Statement stmt = null;
+
 	ResultSet rs = null;
 	String sql = "";
 	String sql2 = "";
+	String sql3 = ""; // 추가
 	String returns = "";
 	String returns2 = "";
+	String returns3 = "";
+	StringBuilder sb = new StringBuilder();
 
 	public String joindb(String id, String pwd, String name) {
 		try {
@@ -51,6 +56,7 @@ public class scheduleAppServer {//ڵ
 						returns = "id";
 					}
 				} else { // Է ̵
+
 					sql2 = "insert into user values(?,?,?,?)";
 					pstmt2 = conn.prepareStatement(sql2);
 					pstmt2.setString(1, id);
@@ -60,7 +66,16 @@ public class scheduleAppServer {//ڵ
 
 					pstmt2.executeUpdate();
 
+					stmt = conn.createStatement();
+					sql3 = sb.append("create table calendar").append(id).append("( id char(15) NOT NULL, ")
+							.append("date date NOT NULL, ").append("schedule varchar(80), ").append("memo text, ")
+							.append("foreign key(id) references user(id), ").append("primary key(id, date, schedule));")
+							.toString();
+
+					stmt.execute(sql3);
+
 					returns = "ok";
+
 				}
 			}
 		} catch (Exception e) {
@@ -84,6 +99,11 @@ public class scheduleAppServer {//ڵ
 			if (rs != null)
 				try {
 					rs.close();
+				} catch (SQLException ex) {
+				}
+			if (stmt != null)
+				try {
+					stmt.close();
 				} catch (SQLException ex) {
 				}
 		}
@@ -134,9 +154,182 @@ public class scheduleAppServer {//ڵ
 		return returns2;
 	}
 
-	/*public ArrayList<Schedule> loadSchedule() {
+	public String calendardb(String id, String date, String schedule, String memo) {
+		String user_calendar = "calendar" + id;
+		String rowdb = "";
+		returns3 = "";
+
+		try {
+			sb = new StringBuilder();
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection(jdbc_url, dbId, dbPw);
+			sql = sb.append("select date, schedule, memo from ").append(user_calendar).append(" where date = ?")
+					.toString();
+
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, date);
+			System.out.println(pstmt);
+			rs = pstmt.executeQuery();
+			System.out.println(rs);
+			while (rs.next()) {
+				rowdb = rowdb + rs.getString("date") + "," + rs.getString("schedule") + "," + rs.getString("memo")
+						+ ","; // date, schedule, memo
+			}
+			System.out.println(rowdb);
+			returns3 = rowdb;
+
+		} catch (Exception e) {
+
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException ex) {
+				}
+			if (pstmt != null)
+				try {
+					pstmt.close();
+				} catch (SQLException ex) {
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException ex) {
+				}
+		}
+		return returns3;
+	}
+
+	public String addCalendar(String id, String date, String schedule, String memo) {
+		String user_calendar = "calendar" + id;
+
+		returns3 = "";
+
+		try {
+			sb = new StringBuilder();
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection(jdbc_url, dbId, dbPw);
+			sql = sb.append("select date, schedule from ").append(user_calendar)
+					.append(" where date = ? and schedule = ? ").toString();
+
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, date);
+			pstmt.setString(2, schedule);
+			System.out.println(pstmt);
+			rs = pstmt.executeQuery();
+			System.out.println(rs);
+			if (rs.next()) {
+				returns3 = "false";
+
+			} else {
+				sb = new StringBuilder();
+				sql2 = sb.append("insert into ").append(user_calendar).append(" values(?,?,?,?) ").toString();
+				System.out.println(sql2 + "\n");
+				pstmt2 = conn.prepareStatement(sql2);
+				pstmt2.setString(1, id);
+				pstmt2.setString(2, date);
+				pstmt2.setString(3, schedule);
+				pstmt2.setString(4, memo);
+				System.out.println(pstmt2);
+
+				pstmt2.executeUpdate();
+
+				returns3 = "done";
+			}
+
+		} catch (Exception e) {
+
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException ex) {
+				}
+			if (pstmt != null)
+				try {
+					pstmt.close();
+				} catch (SQLException ex) {
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException ex) {
+				}
+			if (pstmt2 != null)
+				try {
+					pstmt2.close();
+				} catch (SQLException ex) {
+				}
+		}
+		return returns3;
+	}
+
+	public String editCalendar(String id, String date, String schedule, String memo, String old) {
+		String user_calendar = "calendar" + id;
+
+		returns3 = "";
+
+		try {
+			sb = new StringBuilder();
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection(jdbc_url, dbId, dbPw);
+			sql = sb.append("select date, schedule from ").append(user_calendar)
+					.append(" where date = ? and schedule = ? ").toString();
+
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, date);
+			pstmt.setString(2, schedule);
+			System.out.println(pstmt);
+			rs = pstmt.executeQuery();
+			System.out.println(rs);
+			if (rs.next()) {
+				returns3 = "false";
+
+			} else {
+				sb = new StringBuilder();
+				sql2 = sb.append("update ").append(user_calendar)
+						.append(" set schedule = ?, memo = ? where schedule =?").toString();
+				pstmt2 = conn.prepareStatement(sql2);
+				pstmt2.setString(1, schedule);
+				pstmt2.setString(2, memo);
+				pstmt2.setString(3, old);
+				System.out.println(pstmt2);
+
+				pstmt2.executeUpdate();
+
+				returns3 = "done";
+			}
+
+		} catch (Exception e) {
+
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException ex) {
+				}
+			if (pstmt != null)
+				try {
+					pstmt.close();
+				} catch (SQLException ex) {
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException ex) {
+				}
+			if (pstmt2 != null)
+				try {
+					pstmt2.close();
+				} catch (SQLException ex) {
+				}
+		}
+		return returns3;
+	}
+
+	public String loadSchedule() {
 		System.out.println("들어가지나");
-		ArrayList<Schedule> schedule_list = new ArrayList<Schedule>();
+		returns = "";
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			conn = DriverManager.getConnection(jdbc_url, dbId, dbPw);
@@ -144,19 +337,7 @@ public class scheduleAppServer {//ڵ
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
 			while (rs.next()) {
-				Schedule schedule = new Schedule();
-
-				System.out.println(schedule.getId());
-				schedule.setSche_id(rs.getInt("schedule_id"));
-				schedule.setSche_name(rs.getString("schedule_name"));
-				schedule.setId(rs.getString("id"));
-				schedule.setDate(rs.getDate("date"));
-				schedule.setLocation(rs.getString("location"));
-				schedule.setParticipants(rs.getString("participants"));
-
-				schedule_list.add(schedule);
-
-				System.out.println(schedule.toString());
+				returns += rs.getString("schedule_name") + "\t" + rs.getInt("schedule_id") + "\t";
 
 			}
 
@@ -166,80 +347,42 @@ public class scheduleAppServer {//ڵ
 			if (rs != null)
 				try {
 					rs.close();
-				} catch (SQLException ex) {}
+				} catch (SQLException ex) {
+				}
 			if (pstmt != null)
 				try {
 					pstmt.close();
-				} catch (SQLException ex) {}
+				} catch (SQLException ex) {
+				}
 			if (conn != null)
 				try {
 					conn.close();
-				} catch (SQLException ex) {}
-		}
-		
-		return schedule_list;
-
-	}*/
-		public String loadSchedule() {
-			System.out.println("들어가지나");
-			
-			try {
-				Class.forName("com.mysql.jdbc.Driver");
-				conn = DriverManager.getConnection(jdbc_url, dbId, dbPw);
-				sql = "select * from schedule";
-				pstmt = conn.prepareStatement(sql);
-				rs = pstmt.executeQuery();
-				while (rs.next()) {
-					returns += rs.getString("schedule_name")+"\t"+rs.getInt("schedule_id")+"\t";
-
+				} catch (SQLException ex) {
 				}
-
-			} catch (Exception e) {
-
-			} finally {
-				if (rs != null)
-					try {
-						rs.close();
-					} catch (SQLException ex) {}
-				if (pstmt != null)
-					try {
-						pstmt.close();
-					} catch (SQLException ex) {}
-				if (conn != null)
-					try {
-						conn.close();
-					} catch (SQLException ex) {}
-			}
-			System.out.println(returns);
-			return returns;
-
 		}
-	/*public String addSchedule(String sche_id, String id, String sche_name) {
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection(jdbc_url, dbId, dbPw);
-			sql = "select count * from schedule";
-			Statement stmt = conn.createStatement();
-			rs = stmt.executeQuery(sql);
-
-			sql2 = "insert into schedule values(?,?,?)";
-			pstmt2 = conn.prepareStatement(sql2);
-			pstmt2.setInt(1, rs.getInt(0) + 1);
-			pstmt2.setString(2, id);
-			pstmt2.setString(3, sche_name);
-
-			pstmt2.executeUpdate();
-
-			returns = "ok";
-
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+		System.out.println(returns);
 		return returns;
-	}*/
+
+	}
+
+	/*public String addSchedule(String sche_id, String id, String sche_name) { try
+	  { Class.forName("com.mysql.jdbc.Driver"); conn =
+	  DriverManager.getConnection(jdbc_url, dbId, dbPw); sql =
+	  "select count * from schedule"; Statement stmt = conn.createStatement(); rs =
+	  stmt.executeQuery(sql);
+	  
+	  sql2 = "insert into schedule values(?,?,?)"; pstmt2 =
+	  conn.prepareStatement(sql2); pstmt2.setInt(1, rs.getInt(0) + 1);
+	  pstmt2.setString(2, id); pstmt2.setString(3, sche_name);
+	  
+	  pstmt2.executeUpdate();
+	  
+	  returns = "ok";
+	  
+	 } catch (ClassNotFoundException e) { // TODO Auto-generated catch block
+	  e.printStackTrace(); } catch (SQLException e) { // TODO Auto-generated catch
+	  block e.printStackTrace(); }
+	  
+	 return returns; }*/
+
 }
