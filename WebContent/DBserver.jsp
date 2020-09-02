@@ -28,8 +28,8 @@
    else if(type.equals("loadSche"))
    {
 	  System.out.println("Load");
-	  ArrayList<Schedule> list = connectDB.loadSchedule();
-	  out.print(list);
+	  String returns = connectDB.loadSchedule();
+	  out.print(returns);
 	  
    }
   

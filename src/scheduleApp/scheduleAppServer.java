@@ -92,8 +92,10 @@ public class scheduleAppServer {//ڵ
 
 	public String logindb(String id, String pwd) {
 		try {
+			System.out.println("DB 접속 전");
 			Class.forName("com.mysql.jdbc.Driver");
 			conn = DriverManager.getConnection(jdbc_url, dbId, dbPw);
+			System.out.println("DB 접속 후");
 			sql = "select id,pw from user where id=? and pw=?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, id);
@@ -128,10 +130,11 @@ public class scheduleAppServer {//ڵ
 				} catch (SQLException ex) {
 				}
 		}
+		System.out.println(returns2);
 		return returns2;
 	}
 
-	public ArrayList<Schedule> loadSchedule() {
+	/*public ArrayList<Schedule> loadSchedule() {
 		System.out.println("들어가지나");
 		ArrayList<Schedule> schedule_list = new ArrayList<Schedule>();
 		try {
@@ -176,8 +179,41 @@ public class scheduleAppServer {//ڵ
 		
 		return schedule_list;
 
-	}
+	}*/
+		public String loadSchedule() {
+			System.out.println("들어가지나");
+			
+			try {
+				Class.forName("com.mysql.jdbc.Driver");
+				conn = DriverManager.getConnection(jdbc_url, dbId, dbPw);
+				sql = "select * from schedule";
+				pstmt = conn.prepareStatement(sql);
+				rs = pstmt.executeQuery();
+				while (rs.next()) {
+					returns += rs.getString("schedule_name")+"\t"+rs.getInt("schedule_id")+"\t";
 
+				}
+
+			} catch (Exception e) {
+
+			} finally {
+				if (rs != null)
+					try {
+						rs.close();
+					} catch (SQLException ex) {}
+				if (pstmt != null)
+					try {
+						pstmt.close();
+					} catch (SQLException ex) {}
+				if (conn != null)
+					try {
+						conn.close();
+					} catch (SQLException ex) {}
+			}
+			System.out.println(returns);
+			return returns;
+
+		}
 	/*public String addSchedule(String sche_id, String id, String sche_name) {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
