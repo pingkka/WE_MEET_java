@@ -21,8 +21,9 @@
 	String sche_date = request.getParameter("sche_date");
 	String old_sche_name = request.getParameter("old_sche_name");
 	String new_sche_name = request.getParameter("new_sche_name");
+	String latitude = request.getParameter("latitude");
+	String longitude = request.getParameter("longitude");
 	String sign = request.getParameter("sign");
-
 	String total_mem;
 
 	//싱글톤 방식으로 자바 클래스를 불러옵니다.
@@ -31,7 +32,7 @@
 		String returns = connectDB.logindb(id, pwd);
 		out.print(returns);
 	} else if (type.equals("join")) {
-		String returns = connectDB.joindb(id, pwd, name);
+		String returns = connectDB.joindb(id, pwd, name, latitude, longitude);
 		out.print(returns);
 	} else if (type.equals("calendar_main")) {
 		String returns = connectDB.calendardb(id, date, schedule, memo);
@@ -63,6 +64,10 @@
 	} else if (type.equals("addSche")) {
 		String returns = connectDB.addSchedule(id, sche_name);
 		out.print(returns);
+	} else if (type.equals("joinAddress")){%>
+	   
+    <jsp:forward page="address.jsp"/>
+<%
 	} else if (type.equals("addVote")) {
 		total_mem = "4";
 		String returns = connectDB.addVote(sche_id, sche_name, total_mem);
