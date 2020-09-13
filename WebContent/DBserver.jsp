@@ -21,6 +21,9 @@
 	String sche_date = request.getParameter("sche_date");
 	String old_sche_name = request.getParameter("old_sche_name");
 	String new_sche_name = request.getParameter("new_sche_name");
+	String sign = request.getParameter("sign");
+
+	String total_mem;
 
 	//싱글톤 방식으로 자바 클래스를 불러옵니다.
 	scheduleAppServer connectDB = scheduleAppServer.getInstance();
@@ -59,6 +62,37 @@
 		out.print(returns);
 	} else if (type.equals("addSche")) {
 		String returns = connectDB.addSchedule(id, sche_name);
+		out.print(returns);
+	} else if (type.equals("addVote")) {
+		total_mem = "4";
+		String returns = connectDB.addVote(sche_id, sche_name, total_mem);
+		out.print(returns);
+	} else if (type.equals("modiVote")) {
+		String returns = connectDB.modiVoteName(sche_id, sche_name);
+		out.print(returns);
+	} else if (type.equals("loadDateVote")) {
+		String returns = connectDB.loadDateVote();
+		out.print(returns);
+	} else if (type.equals("setVoteDate")) {
+		String returns = connectDB.setVoteDate(sche_id, date);
+		out.print(returns);
+	} else if (type.equals("loadLocationVote")) {
+		String returns = connectDB.loadLocationVote();
+		out.print(returns);
+	} else if (type.equals("setVoteLocation")) {
+		String returns = connectDB.setVoteLocation(sche_id, location);
+		out.print(returns);
+	} else if (type.equals("voteDate")) {
+		String returns = connectDB.voteDate(sche_id, sign);
+		out.print(returns);
+	} else if (type.equals("voteLocation")) {
+		String returns = connectDB.voteLocation(sche_id, sign);
+		out.print(returns);
+	} else if (type.equals("initVoteLocation")) {
+		String returns = connectDB.initVoteLocation(sche_id);
+		out.print(returns);
+	} else if (type.equals("initVoteDate")) {
+		String returns = connectDB.initVoteDate(sche_id);
 		out.print(returns);
 	}
 %>

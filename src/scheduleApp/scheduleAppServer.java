@@ -528,7 +528,7 @@ public class scheduleAppServer {// ڵ
 		return returns;
 
 	}
-	
+
 	public String deleteSchedule(String sche_id) {
 		returns = "";
 		try {
@@ -576,7 +576,7 @@ public class scheduleAppServer {// ڵ
 			if (rs.next()) {
 				cnt = rs.getInt(1);
 				cnt++;
-				
+
 				pstmt2 = conn.prepareStatement("select schedule_id from schedule where schedule_id = ?");
 				pstmt2.setInt(1, cnt);
 				res = pstmt2.executeQuery();
@@ -589,7 +589,7 @@ public class scheduleAppServer {// ڵ
 					}
 					cnt++;
 				}
-				
+
 			}
 			sql = sb.append("insert into schedule(schedule_id, id, schedule_name)").append(" values(?,?,?) ")
 					.toString();
@@ -631,4 +631,505 @@ public class scheduleAppServer {// ڵ
 		return returns3;
 	}
 
+	public String addVote(String sche_id, String sche_name, String total_mem) {
+
+		returns3 = "";
+		try {
+			sb = new StringBuilder();
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection(jdbc_url, dbId, dbPw);
+			sql = sb.append("insert into vote_date(schedule_id, schedule_name, total_mem)").append(" values(?,?,?) ")
+					.toString();
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, Integer.parseInt(sche_id));
+			pstmt.setString(2, sche_name);
+			pstmt.setInt(3, Integer.parseInt(total_mem));
+			pstmt.executeUpdate();
+
+			sb = new StringBuilder();
+			sql = sb.append("insert into vote_location(schedule_id, schedule_name, total_mem)")
+					.append(" values(?,?,?) ").toString();
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, Integer.parseInt(sche_id));
+			pstmt.setString(2, sche_name);
+			pstmt.setInt(3, Integer.parseInt(total_mem));
+			pstmt.executeUpdate();
+
+			returns3 = "success";
+
+		} catch (Exception e) {
+
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException ex) {
+				}
+			if (pstmt != null)
+				try {
+					pstmt.close();
+				} catch (SQLException ex) {
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException ex) {
+				}
+			if (pstmt2 != null)
+				try {
+					pstmt2.close();
+				} catch (SQLException ex) {
+				}
+		}
+
+		return returns3;
+	}
+
+	public String modiVoteName(String sche_id, String new_sche_name) {
+		returns3 = "";
+
+		try {
+			sb = new StringBuilder();
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection(jdbc_url, dbId, dbPw);
+
+			sql = sb.append("update vote_date set schedule_name = ? where schedule_id =?").toString();
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, new_sche_name);
+			pstmt.setString(2, sche_id);
+
+			pstmt.executeUpdate();
+
+			sql = sb.append("update vote_location set schedule_name = ? where schedule_id =?").toString();
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, new_sche_name);
+			pstmt.setString(2, sche_id);
+
+			pstmt.executeUpdate();
+
+			returns3 = "done";
+
+		} catch (
+
+		Exception e) {
+
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException ex) {
+				}
+			if (pstmt != null)
+				try {
+					pstmt.close();
+				} catch (SQLException ex) {
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException ex) {
+				}
+			if (pstmt2 != null)
+				try {
+					pstmt2.close();
+				} catch (SQLException ex) {
+				}
+		}
+		return returns3;
+	}
+
+	public String loadDateVote() {
+		returns = "";
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection(jdbc_url, dbId, dbPw);
+			sql = "select * from vote_date";
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				returns += rs.getInt("schedule_id") + "\t" + rs.getString("schedule_name") + "\t" + rs.getDate("date")
+						+ "\t";
+			}
+
+		} catch (Exception e) {
+
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException ex) {
+				}
+			if (pstmt != null)
+				try {
+					pstmt.close();
+				} catch (SQLException ex) {
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException ex) {
+				}
+		}
+		return returns;
+
+	}
+
+	public String setVoteDate(String sche_id, String date) {
+		returns3 = "";
+
+		try {
+			sb = new StringBuilder();
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection(jdbc_url, dbId, dbPw);
+
+			sql = sb.append("update vote_date set date = ? where schedule_id =?").toString();
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, date);
+			pstmt.setString(2, sche_id);
+
+			pstmt.executeUpdate();
+
+			returns3 = "done";
+
+		} catch (
+
+		Exception e) {
+
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException ex) {
+				}
+			if (pstmt != null)
+				try {
+					pstmt.close();
+				} catch (SQLException ex) {
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException ex) {
+				}
+			if (pstmt2 != null)
+				try {
+					pstmt2.close();
+				} catch (SQLException ex) {
+				}
+		}
+		return returns3;
+	}
+
+	public String voteDate(String sche_id, String sign) {
+		System.out.println(sign);
+		System.out.println(sche_id);
+		returns3 = "";
+		int cnt = 0;
+		try {
+			sb = new StringBuilder();
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection(jdbc_url, dbId, dbPw);
+			pstmt2 = conn.prepareStatement("select * from vote_date where schedule_id = ?");
+			pstmt2.setInt(1, Integer.parseInt(sche_id));
+			res = pstmt2.executeQuery();
+
+			if (res.next()) {
+				if (res.getInt(3) == res.getInt(4) + res.getInt(5)) {
+					if (res.getInt(4) > res.getInt(5))
+						returns3 = "success";
+					else
+						returns3 = "revote";
+				} else {
+					if (sign.equals("yes")) {
+						cnt = res.getInt(4); // error
+						sql = sb.append("update vote_date set yes = ? where schedule_id =?").toString();
+					} else if (sign.equals("no")) {
+						cnt = res.getInt(5);
+						System.out.println(cnt);
+						sql = sb.append("update vote_date set no = ? where schedule_id =?").toString();
+					}
+					pstmt = conn.prepareStatement(sql);
+					pstmt.setInt(1, cnt + 1);
+					pstmt.setString(2, sche_id);
+
+					pstmt.executeUpdate();
+					returns3 = "done";
+				}
+			}
+
+			
+
+		} catch (ClassNotFoundException e) {
+			System.out.println("classException");
+			e.printStackTrace();
+		} catch (SQLException e) {
+			System.out.println("ERROR");
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException ex) {
+				}
+			if (pstmt != null)
+				try {
+					pstmt.close();
+				} catch (SQLException ex) {
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException ex) {
+				}
+			if (pstmt2 != null)
+				try {
+					pstmt2.close();
+				} catch (SQLException ex) {
+				}
+		}
+		return returns3;
+	}
+
+	public String loadLocationVote() {
+		returns = "";
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection(jdbc_url, dbId, dbPw);
+			sql = "select * from vote_location";
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+				returns += rs.getInt("schedule_id") + "\t" + rs.getString("schedule_name") + "\t"
+						+ rs.getString("location");
+			}
+
+		} catch (Exception e) {
+
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException ex) {
+				}
+			if (pstmt != null)
+				try {
+					pstmt.close();
+				} catch (SQLException ex) {
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException ex) {
+				}
+		}
+		return returns;
+
+	}
+
+	public String setVoteLocation(String sche_id, String location) {
+		System.out.println("setLoca");
+		returns3 = "";
+
+		try {
+			sb = new StringBuilder();
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection(jdbc_url, dbId, dbPw);
+
+			sql = sb.append("update vote_location set location = ? where schedule_id =?").toString();
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, location);
+			pstmt.setString(2, sche_id);
+
+			pstmt.executeUpdate();
+			System.out.println(pstmt);
+
+			returns3 = "done";
+
+		} catch (
+
+		Exception e) {
+
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException ex) {
+				}
+			if (pstmt != null)
+				try {
+					pstmt.close();
+				} catch (SQLException ex) {
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException ex) {
+				}
+			if (pstmt2 != null)
+				try {
+					pstmt2.close();
+				} catch (SQLException ex) {
+				}
+		}
+		System.out.println(returns3);
+		return returns3;
+	}
+
+	public String voteLocation(String sche_id, String sign) {
+		System.out.println(sign);
+		System.out.println(sche_id);
+		returns3 = "";
+		int cnt = 0;
+		try {
+			sb = new StringBuilder();
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection(jdbc_url, dbId, dbPw);
+			pstmt2 = conn.prepareStatement("select * from vote_location where schedule_id = ?");
+			pstmt2.setInt(1, Integer.parseInt(sche_id));
+			res = pstmt2.executeQuery();
+
+			if (res.next()) {
+				if (res.getInt(3) == res.getInt(4) + res.getInt(5)) {
+					if (res.getInt(4) > res.getInt(5))
+						returns3 = "success";
+					else
+						returns3 = "revote";
+				} else {
+					if (sign.equals("yes")) {
+						cnt = res.getInt(4);
+						sql = sb.append("update vote_location set yes = ? where schedule_id =?").toString();
+					} else if (sign.equals("no")) {
+						cnt = res.getInt(5);
+						System.out.println(cnt);
+						sql = sb.append("update vote_location set no = ? where schedule_id =?").toString();
+					}
+					pstmt = conn.prepareStatement(sql);
+					pstmt.setInt(1, cnt + 1);
+					pstmt.setString(2, sche_id);
+
+					pstmt.executeUpdate();
+					returns3 = "";
+				}
+
+			}
+
+		} catch (ClassNotFoundException e) {
+			System.out.println("classException");
+			e.printStackTrace();
+		} catch (SQLException e) {
+			System.out.println("ERROR");
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException ex) {
+				}
+			if (pstmt != null)
+				try {
+					pstmt.close();
+				} catch (SQLException ex) {
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException ex) {
+				}
+			if (pstmt2 != null)
+				try {
+					pstmt2.close();
+				} catch (SQLException ex) {
+				}
+		}
+		return returns3;
+	}
+
+	public String initVoteLocation(String sche_id) {
+		returns3 = "";
+		try {
+			sb = new StringBuilder();
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection(jdbc_url, dbId, dbPw);
+			sql = sb.append("update vote_location set yes = 0, no = 0 where schedule_id =?").toString();
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, sche_id);
+
+			pstmt.executeUpdate();
+
+			returns3 = "";
+
+		} catch (
+
+		ClassNotFoundException e) {
+			System.out.println("classException");
+			e.printStackTrace();
+		} catch (SQLException e) {
+			System.out.println("ERROR");
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException ex) {
+				}
+			if (pstmt != null)
+				try {
+					pstmt.close();
+				} catch (SQLException ex) {
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException ex) {
+				}
+			if (pstmt2 != null)
+				try {
+					pstmt2.close();
+				} catch (SQLException ex) {
+				}
+		}
+		return returns3;
+	}
+	public String initVoteDate(String sche_id) {
+		returns3 = "";
+		try {
+			sb = new StringBuilder();
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection(jdbc_url, dbId, dbPw);
+			sql = sb.append("update vote_date set yes = 0, no = 0 where schedule_id =?").toString();
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, sche_id);
+
+			pstmt.executeUpdate();
+
+			returns3 = "";
+
+		} catch (
+
+		ClassNotFoundException e) {
+			System.out.println("classException");
+			e.printStackTrace();
+		} catch (SQLException e) {
+			System.out.println("ERROR");
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException ex) {
+				}
+			if (pstmt != null)
+				try {
+					pstmt.close();
+				} catch (SQLException ex) {
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException ex) {
+				}
+			if (pstmt2 != null)
+				try {
+					pstmt2.close();
+				} catch (SQLException ex) {
+				}
+		}
+		return returns3;
+	}
 }
