@@ -359,7 +359,48 @@ public class scheduleAppServer {// ڵ
 		return returns;
 
 	}
+	public String loadPosition(String sche_id) {
+		System.out.println("loadPorition");
+		returns = "";
+		try {
+			sb = new StringBuilder();
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection(jdbc_url, dbId, dbPw);
+			sql = "select * from schedule where schedule_id = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, sche_id);
+			System.out.println(pstmt);
+			rs = pstmt.executeQuery();
+			System.out.println(rs);
 
+			while (rs.next()) {
+				System.out.println("rs");
+				returns += rs.getDouble("longitude") + "\t" + rs.getDouble("latitude") + "\t" ;
+			}
+
+		} catch (Exception e) {
+
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException ex) {
+				}
+			if (pstmt != null)
+				try {
+					pstmt.close();
+				} catch (SQLException ex) {
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException ex) {
+				}
+		}
+		System.out.println(returns);
+		return returns;
+
+	}
 	public String setDate(String sche_id, String date) {
 		returns3 = "";
 

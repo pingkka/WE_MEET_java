@@ -3,6 +3,7 @@
 <%@ page import="scheduleApp.scheduleAppServer"%>
 <%@ page import="scheduleApp.Schedule"%>
 <%@ page import="java.util.ArrayList"%>
+<%@ page import="scheduleApp.friendServer"%>
 
 
 <%
@@ -24,6 +25,7 @@
 	String latitude = request.getParameter("latitude");
 	String longitude = request.getParameter("longitude");
 	String sign = request.getParameter("sign");
+	String friendName = request.getParameter("friendName");
 	String total_mem;
 
 	//싱글톤 방식으로 자바 클래스를 불러옵니다.
@@ -98,6 +100,37 @@
 		out.print(returns);
 	} else if (type.equals("initVoteDate")) {
 		String returns = connectDB.initVoteDate(sche_id);
+		out.print(returns);
+	}  else if (type.equals("loadPosition")) {
+		System.out.println("loadPosition"+sche_id);
+		String returns = connectDB.loadPosition(sche_id);
+		out.print(returns);
+	}
+	
+	friendServer friendDB = friendServer.getInstance();
+	if (type.equals("loadUser")) {
+		String returns = friendDB.loadUser(id);
+		out.print(returns);
+	} else if (type.equals("loadFriends")) {
+		String returns = friendDB.loadFriends(id);
+		out.print(returns);
+	} else if (type.equals("loadOthers")) {
+		String returns = friendDB.loadOthers(id);
+		out.print(returns);
+	} else if (type.equals("loadWaiters")) {
+		String returns = friendDB.loadWaiters(id);
+		out.print(returns);
+	} else if (type.equals("loadAllUsers")) {
+		String returns = friendDB.loadAllUsers();
+		out.print(returns);
+	} else if (type.equals("friendAccept")) {
+		String returns = friendDB.friendAccept(id, friendName);
+		out.print(returns);
+	} else if (type.equals("friendReject")) {
+		String returns = friendDB.friendReject(id, friendName);
+		out.print(returns);
+	} else if (type.equals("friendRequest")) {
+		String returns = friendDB.friendRequest(id, friendName);
 		out.print(returns);
 	}
 %>
