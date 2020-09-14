@@ -27,9 +27,9 @@
 	String sign = request.getParameter("sign");
 	String friendName = request.getParameter("friendName");
 	String total_mem;
-
 	//싱글톤 방식으로 자바 클래스를 불러옵니다.
 	scheduleAppServer connectDB = scheduleAppServer.getInstance();
+
 	if (type.equals("login")) {
 		String returns = connectDB.logindb(id, pwd);
 		out.print(returns);
@@ -66,9 +66,10 @@
 	} else if (type.equals("addSche")) {
 		String returns = connectDB.addSchedule(id, sche_name);
 		out.print(returns);
-	} else if (type.equals("joinAddress")){%>
-	   
-    <jsp:forward page="address.jsp"/>
+	} else if (type.equals("joinAddress")) {
+%>
+
+<jsp:forward page="address.jsp" />
 <%
 	} else if (type.equals("addVote")) {
 		total_mem = "4";
@@ -101,12 +102,12 @@
 	} else if (type.equals("initVoteDate")) {
 		String returns = connectDB.initVoteDate(sche_id);
 		out.print(returns);
-	}  else if (type.equals("loadPosition")) {
-		System.out.println("loadPosition"+sche_id);
+	} else if (type.equals("loadPosition")) {
+		System.out.println("loadPosition" + sche_id);
 		String returns = connectDB.loadPosition(sche_id);
 		out.print(returns);
 	}
-	
+
 	friendServer friendDB = friendServer.getInstance();
 	if (type.equals("loadUser")) {
 		String returns = friendDB.loadUser(id);
@@ -131,6 +132,9 @@
 		out.print(returns);
 	} else if (type.equals("friendRequest")) {
 		String returns = friendDB.friendRequest(id, friendName);
+		out.print(returns);
+	} else if (type.equals("savePoint")) {
+		String returns = connectDB.savePoint(sche_id, latitude, longitude, location);
 		out.print(returns);
 	}
 %>

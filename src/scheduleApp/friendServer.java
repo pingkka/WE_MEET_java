@@ -19,7 +19,7 @@ public class friendServer {
 	
 	String jdbc_url = "jdbc:mysql://localhost:3306/we_meet?characterEncoding=euckr&useUnicode=true&mysqlEncoding=euckr&useSSL=false&serverTimezone=Asia/Seoul";
 	String dbId = "root"; // MySQL
-	String dbPw = "1234"; // MySQL password
+	String dbPw = "18lsy0322!"; // MySQL password
 	Connection conn = null;
 	PreparedStatement pstmt = null;
 	
