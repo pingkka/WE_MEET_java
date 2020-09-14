@@ -29,7 +29,6 @@
 	String total_mem;
 	//싱글톤 방식으로 자바 클래스를 불러옵니다.
 	scheduleAppServer connectDB = scheduleAppServer.getInstance();
-
 	if (type.equals("login")) {
 		String returns = connectDB.logindb(id, pwd);
 		out.print(returns);
@@ -107,7 +106,6 @@
 		String returns = connectDB.loadPosition(sche_id);
 		out.print(returns);
 	}
-
 	friendServer friendDB = friendServer.getInstance();
 	if (type.equals("loadUser")) {
 		String returns = friendDB.loadUser(id);
@@ -134,7 +132,7 @@
 		String returns = friendDB.friendRequest(id, friendName);
 		out.print(returns);
 	} else if (type.equals("savePoint")) {
-		String returns = connectDB.savePoint(sche_id, latitude, longitude, location);
+		String returns = connectDB.savePoint(sche_id, latitude, longitude, location); 
 		out.print(returns);
 	}
 %>

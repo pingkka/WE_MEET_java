@@ -26,6 +26,7 @@ public class scheduleAppServer {// ڵ
 	Connection conn = null;
 	PreparedStatement pstmt = null;
 	PreparedStatement pstmt2 = null;
+	PreparedStatement pstmt3 = null;
 	Statement stmt = null;
 
 	ResultSet rs = null;
@@ -33,87 +34,95 @@ public class scheduleAppServer {// ڵ
 	String sql = "";
 	String sql2 = "";
 	String sql3 = ""; // 추가
+	String sql4 = "";
 	String returns = "";
 	String returns2 = "";
 	String returns3 = "";
 	StringBuilder sb = new StringBuilder();
 
 	public String joindb(String id, String pwd, String name, String latitude, String longitude) {
-        try {
-           Class.forName("com.mysql.jdbc.Driver");
-           conn = DriverManager.getConnection(jdbc_url, dbId, dbPw);
-           if (id.equals("")) {
-              return "emptyid";
-           } else if (pwd.equals("")) {
-              return "emptypw";
-           } else if (name.equals("")) {
-              return "emptyname";
-           } else {
-              sql = "select id from user where id=?";
-              pstmt = conn.prepareStatement(sql);
-              pstmt.setString(1, id);
-              rs = pstmt.executeQuery();
-              if (rs.next()) {
-                 if (rs.getString("id").equals(id)) { // ̹ ̵ ִ
-                    returns = "id";
-                 }
-           } else { // Է ̵
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection(jdbc_url, dbId, dbPw);
+			if (id.equals("")) {
+				return "emptyid";
+			} else if (pwd.equals("")) {
+				return "emptypw";
+			} else if (name.equals("")) {
+				return "emptyname";
+			} else {
+				sql = "select id from user where id=?";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, id);
+				rs = pstmt.executeQuery();
+				if (rs.next()) {
+					if (rs.getString("id").equals(id)) { // ̹ ̵ ִ
+						returns = "id";
+					}
+				} else { // Է ̵
 
-               sql2 = "insert into user values(?,?,?,?,?)";
-               pstmt2 = conn.prepareStatement(sql2);
-               pstmt2.setString(1, id);
-               pstmt2.setString(2, pwd);
-               pstmt2.setString(3, name);
-               pstmt2.setString(4, latitude);
-               pstmt2.setString(5, longitude);
-               
-               pstmt2.executeUpdate();
+					sql2 = "insert into user values(?,?,?,?,?)";
+					pstmt2 = conn.prepareStatement(sql2);
+					pstmt2.setString(1, id);
+					pstmt2.setString(2, pwd);
+					pstmt2.setString(3, name);
+					pstmt2.setString(4, latitude);
+					pstmt2.setString(5, longitude);
 
-              stmt = conn.createStatement();
-              sb = new StringBuilder();
-              sql3 = sb.append("create table calendar").append(id).append("( id char(15) NOT NULL, ")
-                    .append("date date NOT NULL, ").append("schedule varchar(80), ").append("memo text, ")
-                    .append("foreign key(id) references user(id), ").append("primary key(id, date, schedule));")
-                    .toString();
+					pstmt2.executeUpdate();
 
-              stmt.execute(sql3);
+					stmt = conn.createStatement();
+					sb = new StringBuilder();
+					sql3 = sb.append("create table calendar").append(id).append("( id char(15) NOT NULL, ")
+							.append("date date NOT NULL, ").append("schedule varchar(80), ").append("memo text, ")
+							.append("foreign key(id) references user(id), ").append("primary key(id, date, schedule));")
+							.toString();
 
-              returns = "ok";
+					stmt.execute(sql3);
 
-           }
-        }
-     } catch (Exception e) {
-        e.printStackTrace();
-     } finally {
-        if (pstmt != null)
-           try {
-              pstmt.close();
-           } catch (SQLException ex) {
-           }
-        if (conn != null)
-           try {
-              conn.close();
-           } catch (SQLException ex) {
-           }
-        if (pstmt2 != null)
-           try {
-              pstmt2.close();
-           } catch (SQLException ex) {
-           }
-        if (rs != null)
-           try {
-              rs.close();
-           } catch (SQLException ex) {
-           }
-        if (stmt != null)
-           try {
-              stmt.close();
-           } catch (SQLException ex) {
-           }
-     }
-     return returns;
-  }
+					sb = new StringBuilder();
+					sql4 = sb.append("create table friends_").append(id).append("( id char(15) NOT NULL, ")
+							.append("name char(10) NOT NULL, ").append("status int(1) NOT NULL,")
+							.append("foreign key(id) references user(id), ").append("primary key(id));").toString();
+					pstmt3 = conn.prepareStatement(sql4);
 
+					pstmt3.executeUpdate();
+
+					returns = "ok";
+
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (pstmt != null)
+				try {
+					pstmt.close();
+				} catch (SQLException ex) {
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException ex) {
+				}
+			if (pstmt2 != null)
+				try {
+					pstmt2.close();
+				} catch (SQLException ex) {
+				}
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException ex) {
+				}
+			if (stmt != null)
+				try {
+					stmt.close();
+				} catch (SQLException ex) {
+				}
+		}
+		return returns;
+	}
 
 	public String logindb(String id, String pwd) {
 		try {
@@ -359,6 +368,7 @@ public class scheduleAppServer {// ڵ
 		return returns;
 
 	}
+
 	public String loadPosition(String sche_id) {
 		System.out.println("loadPorition");
 		returns = "";
@@ -375,7 +385,7 @@ public class scheduleAppServer {// ڵ
 
 			while (rs.next()) {
 				System.out.println("rs");
-				returns += rs.getDouble("latitude") + "\t" + rs.getDouble("longitude") + "\t" ;
+				returns += rs.getDouble("latitude") + "\t" + rs.getDouble("longitude") + "\t";
 			}
 
 		} catch (Exception e) {
@@ -401,6 +411,7 @@ public class scheduleAppServer {// ڵ
 		return returns;
 
 	}
+
 	public String setDate(String sche_id, String date) {
 		returns3 = "";
 
@@ -674,7 +685,7 @@ public class scheduleAppServer {// ڵ
 
 		return returns3;
 	}
-	
+
 	public String addVote(String sche_id, String sche_name, String total_mem) {
 
 		returns3 = "";
@@ -907,8 +918,6 @@ public class scheduleAppServer {// ڵ
 				}
 			}
 
-			
-
 		} catch (ClassNotFoundException e) {
 			System.out.println("classException");
 			e.printStackTrace();
@@ -1137,6 +1146,7 @@ public class scheduleAppServer {// ڵ
 		}
 		return returns3;
 	}
+
 	public String initVoteDate(String sche_id) {
 		returns3 = "";
 		try {
@@ -1182,9 +1192,10 @@ public class scheduleAppServer {// ڵ
 		}
 		return returns3;
 	}
+
 	public String savePoint(String sche_id, String latitude, String longitude, String location) {
 		returns = "";
-		
+
 		try {
 			System.out.println("savepoint");
 			sb = new StringBuilder();
@@ -1194,27 +1205,26 @@ public class scheduleAppServer {// ڵ
 					.append(" set latitude = ?, longitude = ?, location = ? where schedule_id =?").toString();
 			System.out.println(sql2);
 			pstmt2 = conn.prepareStatement(sql2);
-			pstmt2.setString(1,latitude);
-			pstmt2.setString(2,longitude);
+			pstmt2.setString(1, latitude);
+			pstmt2.setString(2, longitude);
 			pstmt2.setString(3, location);
 			pstmt2.setString(4, sche_id);
 			System.out.println(pstmt2);
-			
+
 			pstmt2.executeUpdate();
-			
+
 			sb = new StringBuilder();
 			sql2 = sb.append("update vote_location")
 					.append(" set latitude = ?, longitude = ?, location = ? where schedule_id =?").toString();
 			pstmt2 = conn.prepareStatement(sql2);
-			pstmt2.setString(1,latitude);
-			pstmt2.setString(2,longitude);
+			pstmt2.setString(1, latitude);
+			pstmt2.setString(2, longitude);
 			pstmt2.setString(3, location);
 			pstmt2.setString(4, sche_id);
 
 			pstmt2.executeUpdate();
-			
+
 			returns = "";
-			
 
 		} catch (Exception e) {
 
@@ -1240,8 +1250,7 @@ public class scheduleAppServer {// ڵ
 				} catch (SQLException ex) {
 				}
 		}
-		
-		
+
 		return returns;
 	}
 }
